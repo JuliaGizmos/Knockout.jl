@@ -23,12 +23,18 @@ function knockout(template, data, extra_js = js"")
 
             # forward updates from Julia to Knockoutjs
             onjs(v, @js function (val)
-                this.model[$skey](val)
+                if val != this.model[$skey]()
+                    this.valueFromJulia[$skey] = true
+                    this.model[$skey](val)
+                end
             end)
 
             # forward updates from Knockoutjs to Julia
-            watches[skey] = @js this[$skey].subscribe( function(newText)
-                $v[] = newText
+            watches[skey] = @js this[$skey].subscribe( function(val)
+                if !self.valueFromJulia[$skey]
+                    $v[] = val
+                end
+                self.valueFromJulia[$skey] = false
             end)
         end
     end
@@ -51,8 +57,9 @@ function knockout(template, data, extra_js = js"")
 
             return result;
         };
+        var json_data = JSON.parse($json_data);
+        var self = this;
         function AppViewModel() {
-            var json_data = JSON.parse($json_data);
             for (var key in json_data) {
                 var isNumber = (typeof(json_data[key]) == "number");
                 this[key] = ko.observable(json_data[key]).extend({preserveType: isNumber});
@@ -62,8 +69,12 @@ function knockout(template, data, extra_js = js"")
         }
         var elements = document.getElementsByName($id);
         var element = elements[elements.length-1];
-        this.model = new AppViewModel();
-        ko.applyBindings(this.model, element);
+        self.model = new AppViewModel();
+        self.valueFromJulia = {};
+        for (var key in json_data) {
+            self.valueFromJulia[key] = false;
+        }
+        ko.applyBindings(self.model, element);
     }
     """
     onimport(widget, on_import)
