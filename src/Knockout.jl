@@ -4,10 +4,12 @@ using WebIO, Observables, JSExpr, JSON
 
 export knockout
 
+const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
+
 function knockout(template, data, extra_js = js"")
     id = WebIO.newid("knockout-component")
     widget = Scope(;
-        imports=Any["https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"]
+        imports=Any[knockout_js]
     )
     widget.dom = Node(:div, template, attributes=Dict("name" => id))
     ko_data = Dict()
