@@ -36,10 +36,26 @@ function knockout(template, data, extra_js = js"")
     json_data = JSON.json(ko_data)
     on_import = js"""
     function (ko) {
+        ko.extenders.preserveType = function(target, isNumber) {
+            var result = ko.pureComputed({
+                read: target,
+                write: function(newValue) {
+                    var current = target();
+                    var valueToWrite = isNumber ? parseFloat(newValue) : newValue;
+                    if (valueToWrite !== current) {
+                        target(valueToWrite);
+                    }
+                }
+            })
+            result(target());
+
+            return result;
+        };
         function AppViewModel() {
             var json_data = JSON.parse($json_data);
             for (var key in json_data) {
-                this[key] = ko.observable(json_data[key]);
+                var isNumber = (typeof(json_data[key]) == "number");
+                this[key] = ko.observable(json_data[key]).extend({preserveType: isNumber});
             }
             $(values(watches)...)
             $extra_js
