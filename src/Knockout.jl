@@ -8,10 +8,10 @@ const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 
 function knockout(template, data, extra_js = js"")
     id = WebIO.newid("knockout-component")
-    widget = Scope(;
+    widget = Scope(id;
         imports=Any[knockout_js]
     )
-    widget.dom = Node(:div, template, attributes=Dict("name" => id))
+    widget.dom = template
     ko_data = Dict()
     watches = Dict()
     for (k, v) in data
@@ -42,12 +42,13 @@ function knockout(template, data, extra_js = js"")
     json_data = JSON.json(ko_data)
     on_import = js"""
     function (ko) {
-        ko.extenders.preserveType = function(target, isNumber) {
+        ko.extenders.preserveType = function(target, preserve) {
             var result = ko.pureComputed({
                 read: target,
                 write: function(newValue) {
                     var current = target();
-                    var valueToWrite = isNumber ? parseFloat(newValue) : newValue;
+                    var isNumber = typeof(current) == 'number';
+                    var valueToWrite = (preserve && isNumber) ? parseFloat(newValue) : newValue;
                     if (valueToWrite !== current) {
                         target(valueToWrite);
                     }
@@ -61,20 +62,17 @@ function knockout(template, data, extra_js = js"")
         var self = this;
         function AppViewModel() {
             for (var key in json_data) {
-                var isNumber = (typeof(json_data[key]) == "number");
-                this[key] = ko.observable(json_data[key]).extend({preserveType: isNumber});
+                this[key] = ko.observable(json_data[key]).extend({preserveType: true});
             }
             $(values(watches)...)
             $extra_js
         }
-        var elements = document.getElementsByName($id);
-        var element = elements[elements.length-1];
         self.model = new AppViewModel();
         self.valueFromJulia = {};
         for (var key in json_data) {
             self.valueFromJulia[key] = false;
         }
-        ko.applyBindings(self.model, element);
+        ko.applyBindings(self.model, self.dom);
     }
     """
     onimport(widget, on_import)
