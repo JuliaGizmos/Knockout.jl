@@ -6,7 +6,7 @@ export knockout
 
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 
-function knockout(template, data, extra_js = js"")
+function knockout(template, data, extra_js = js""; computed = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
         imports=Any[knockout_js]
@@ -38,7 +38,11 @@ function knockout(template, data, extra_js = js"")
             end)
         end
     end
-
+    computed_dict = Dict()
+    for (k, f) in computed
+        skey = string(k)
+        computed_dict[skey] = @js this[$skey] = ko.computed($f, this)
+    end
     json_data = JSON.json(ko_data)
     on_import = js"""
     function (ko) {
@@ -64,6 +68,7 @@ function knockout(template, data, extra_js = js"")
             for (var key in json_data) {
                 this[key] = ko.observable(json_data[key]).extend({preserveType: true});
             }
+            $(values(computed_dict)...)
             $(values(watches)...)
             $extra_js
         }
