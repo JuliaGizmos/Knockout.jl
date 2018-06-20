@@ -1,3 +1,5 @@
+__precompile__()
+
 module Knockout
 
 using WebIO, Observables, JSExpr, JSON
