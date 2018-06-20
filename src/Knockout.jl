@@ -6,7 +6,7 @@ export knockout
 
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 
-function knockout(template, data, extra_js = js""; computed = [])
+function knockout(template, data, extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
         imports=Any[knockout_js]
@@ -38,11 +38,19 @@ function knockout(template, data, extra_js = js""; computed = [])
             end)
         end
     end
+
+    methods_dict = Dict()
+    for (k, f) in methods
+        skey = string(k)
+        methods_dict[skey] = @js this[$skey] = $f
+    end
+
     computed_dict = Dict()
     for (k, f) in computed
         skey = string(k)
         computed_dict[skey] = @js this[$skey] = ko.computed($f, this)
     end
+
     json_data = JSON.json(ko_data)
     on_import = js"""
     function (ko) {
@@ -68,8 +76,9 @@ function knockout(template, data, extra_js = js""; computed = [])
             for (var key in json_data) {
                 this[key] = ko.observable(json_data[key]).extend({preserveType: true});
             }
-            $(values(computed_dict)...)
-            $(values(watches)...)
+            $(dict2js(methods_dict))
+            $(dict2js(computed_dict))
+            $(dict2js(watches))
             $extra_js
         }
         self.model = new AppViewModel();
@@ -82,6 +91,10 @@ function knockout(template, data, extra_js = js""; computed = [])
     """
     onimport(widget, on_import)
     widget
+end
+
+function dict2js(d::Associative)
+    isempty(d) ? js"" : js"$(values(d)...)"
 end
 
 end # module
