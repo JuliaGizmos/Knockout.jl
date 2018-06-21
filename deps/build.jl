@@ -4,4 +4,5 @@ const _pkg_assets = joinpath(_pkg_root,"assets")
 
 !isdir(_pkg_assets) && mkdir(_pkg_assets)
 
-download("https://unpkg.com/tko@4.0.0-alpha4a/dist/tko.js", joinpath(_pkg_assets, "knockout.js"))
+download("http://knockoutjs.com/downloads/knockout-3.4.2.js", joinpath(_pkg_assets, "knockout.js"))
+download("http://mbest.github.io/knockout.punches/knockout.punches.min.js", joinpath(_pkg_assets, "knockout_punches.js"))

@@ -7,6 +7,7 @@ using WebIO, Observables, JSExpr, JSON
 export knockout
 
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
+const knockout_punches_js = joinpath(@__DIR__, "..", "assets", "knockout_punches.js")
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
@@ -26,7 +27,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js]
+        imports=Any["knockout" => knockout_js, "knockoutpunches" => knockout_punches_js]
     )
     widget.dom = template
     ko_data = Dict()
@@ -70,28 +71,31 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 
     json_data = JSON.json(ko_data)
     on_import = js"""
-    function (ko) {
-        ko.extenders.preserveType = function(target, preserve) {
-            var result = ko.pureComputed({
-                read: target,
-                write: function(newValue) {
-                    var current = target();
-                    var isNumber = typeof(current) == 'number';
-                    var valueToWrite = (preserve && isNumber) ? parseFloat(newValue) : newValue;
-                    if (valueToWrite !== current) {
-                        target(valueToWrite);
-                    }
-                }
-            })
-            result(target());
+    function (ko, koPunches) {
+        ko.punches.enableAll();
+        ko.bindingHandlers.numericValue = {
+            init : function(element, valueAccessor, allBindings, data, context) {
 
-            return result;
+                var interceptor = ko.computed({
+                    read: function() {
+                        return ko.unwrap(valueAccessor());
+                    },
+                    write: function(value) {
+                        if (!isNaN(value)) {
+                            valueAccessor()(parseFloat(value));
+                        }
+                    },
+                    disposeWhenNodeIsRemoved: element
+                });
+
+                ko.applyBindingsToNode(element, { value: interceptor, valueUpdate: allBindings.get('valueUpdate')}, context);
+            }
         };
         var json_data = JSON.parse($json_data);
         var self = this;
         function AppViewModel() {
             for (var key in json_data) {
-                this[key] = ko.observable(json_data[key]).extend({preserveType: true});
+                this[key] = ko.observable(json_data[key]);
             }
             $(dict2js(methods_dict))
             $(dict2js(computed_dict))
@@ -113,5 +117,15 @@ end
 function dict2js(d::Associative)
     isempty(d) ? js"" : js"$(values(d)...)"
 end
+
+function isnumeric(x)
+    isa(x, Number) && !isa(x, Bool)
+end
+isnumeric(x::Observable) = isnumeric(x[])
+function isnumericarray(x)
+    isa(x, AbstractArray{<:Number}) && !isa(x, AbstractArray{<:Bool})
+end
+isnumericarray(x::Observable) = isnumericarray(x[])
+
 
 end # module

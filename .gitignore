@@ -3,3 +3,4 @@
 *.jl.mem
 *play.jl
 assets/knockout.js
+assets/knockout_punches.js
