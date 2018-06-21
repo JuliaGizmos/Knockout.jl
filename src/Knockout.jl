@@ -73,29 +73,27 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     on_import = js"""
     function (ko, koPunches) {
         ko.punches.enableAll();
-        ko.bindingHandlers.numericValue = {
-            init : function(element, valueAccessor, allBindings, data, context) {
-
-                var interceptor = ko.computed({
-                    read: function() {
-                        return ko.unwrap(valueAccessor());
-                    },
-                    write: function(value) {
-                        if (!isNaN(value)) {
-                            valueAccessor()(parseFloat(value));
-                        }
-                    },
-                    disposeWhenNodeIsRemoved: element
-                });
-
-                ko.applyBindingsToNode(element, { value: interceptor, valueUpdate: allBindings.get('valueUpdate')}, context);
-            }
+        ko.extenders.preserveType = function(target, preserve) {
+            var result = ko.pureComputed({
+                read: target,
+                write: function(newValue) {
+                    var current = target();
+                    var isNumber = typeof(current) == 'number';
+                    var valueToWrite = (preserve && isNumber) ? parseFloat(newValue) : newValue;
+                    if (valueToWrite !== current) {
+                        target(valueToWrite);
+                    }
+                }
+            })
+            result(target());
+            return result;
         };
         var json_data = JSON.parse($json_data);
         var self = this;
         function AppViewModel() {
             for (var key in json_data) {
-                this[key] = ko.observable(json_data[key]);
+                var el = json_data[key];
+                this[key] = Array.isArray(el) ? ko.observableArray(el) : ko.observable(el).extend({preserveType: true});
             }
             $(dict2js(methods_dict))
             $(dict2js(computed_dict))
@@ -117,15 +115,5 @@ end
 function dict2js(d::Associative)
     isempty(d) ? js"" : js"$(values(d)...)"
 end
-
-function isnumeric(x)
-    isa(x, Number) && !isa(x, Bool)
-end
-isnumeric(x::Observable) = isnumeric(x[])
-function isnumericarray(x)
-    isa(x, AbstractArray{<:Number}) && !isa(x, AbstractArray{<:Bool})
-end
-isnumericarray(x::Observable) = isnumericarray(x[])
-
 
 end # module
