@@ -27,7 +27,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js, "knockoutpunches" => knockout_punches_js]
+        imports=Any["knockout" => knockout_js]
     )
     widget.dom = template
     ko_data = Dict()
@@ -71,8 +71,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 
     json_data = JSON.json(ko_data)
     on_import = js"""
-    function (ko, koPunches) {
-        ko.punches.enableAll();
+    function (ko) {
         ko.extenders.preserveType = function(target, preserve) {
             var result = ko.pureComputed({
                 read: target,
