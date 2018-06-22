@@ -24,7 +24,7 @@ e.g `knockout(...; computed = Dict(:fullName => @js function(){this.firstName() 
 You can pass functions that you want available in the Knockout scope as keyword arguments to
 `knockout` E.g. `knockout(...; methods=Dict(:sayhello=>@js function(){ alert("hello!") }))`
 """
-function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
+function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [], isnumeric = false)
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
         imports=Any["knockout" => knockout_js]
@@ -70,15 +70,16 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     end
 
     json_data = JSON.json(ko_data)
+
+    isnumeric = isnumeric ? js"true" : js"false"
     on_import = js"""
     function (ko) {
-        ko.extenders.preserveType = function(target, preserve) {
+        ko.extenders.convertToNumber = function(target, isnumeric) {
             var result = ko.pureComputed({
                 read: target,
                 write: function(newValue) {
                     var current = target();
-                    var isNumber = typeof(current) == 'number';
-                    var valueToWrite = (preserve && isNumber) ? parseFloat(newValue) : newValue;
+                    var valueToWrite = (isnumeric) ? parseFloat(newValue) : newValue;
                     if (valueToWrite !== current) {
                         target(valueToWrite);
                     }
@@ -92,7 +93,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
         function AppViewModel() {
             for (var key in json_data) {
                 var el = json_data[key];
-                this[key] = Array.isArray(el) ? ko.observableArray(el) : ko.observable(el).extend({preserveType: true});
+                this[key] = Array.isArray(el) ? ko.observableArray(el) : ko.observable(el).extend({convertToNumber: $isnumeric});
             }
             $(dict2js(methods_dict))
             $(dict2js(computed_dict))
@@ -114,5 +115,10 @@ end
 function dict2js(d::Associative)
     isempty(d) ? js"" : js"$(values(d)...)"
 end
+
+isnumeric(x) = false
+isnumeric(x::Number) = true
+isnumeric(x::Bool) = false
+isnumeric(x::Observable) = isnumeric(x[])
 
 end # module
