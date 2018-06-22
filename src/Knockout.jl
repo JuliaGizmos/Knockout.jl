@@ -24,10 +24,10 @@ e.g `knockout(...; computed = Dict(:fullName => @js function(){this.firstName() 
 You can pass functions that you want available in the Knockout scope as keyword arguments to
 `knockout` E.g. `knockout(...; methods=Dict(:sayhello=>@js function(){ alert("hello!") }))`
 """
-function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [], isnumeric = false)
+function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js]
+        imports=Any["knockout" => knockout_js, "knockout_punches" => knockout_punches_js]
     )
     widget.dom = template
     ko_data = Dict()
@@ -71,29 +71,31 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 
     json_data = JSON.json(ko_data)
 
-    isnumeric = isnumeric ? js"true" : js"false"
     on_import = js"""
-    function (ko) {
-        ko.extenders.convertToNumber = function(target, isnumeric) {
-            var result = ko.pureComputed({
-                read: target,
-                write: function(newValue) {
-                    var current = target();
-                    var valueToWrite = (isnumeric) ? parseFloat(newValue) : newValue;
-                    if (valueToWrite !== current) {
-                        target(valueToWrite);
-                    }
-                }
-            })
-            result(target());
-            return result;
+    function (ko, koPunches) {
+        ko.punches.enableAll();
+        ko.bindingHandlers.numericValue = {
+            init : function(element, valueAccessor, allBindings, data, context) {
+                var interceptor = ko.computed({
+                    read: function() {
+                        return ko.unwrap(valueAccessor());
+                    },
+                    write: function(value) {
+                        if (!isNaN(value)) {
+                            valueAccessor()(parseFloat(value));
+                        }
+                    },
+                    disposeWhenNodeIsRemoved: element
+                });
+                ko.applyBindingsToNode(element, { value: interceptor, valueUpdate: allBindings.get('valueUpdate')}, context);
+            }
         };
         var json_data = JSON.parse($json_data);
         var self = this;
         function AppViewModel() {
             for (var key in json_data) {
                 var el = json_data[key];
-                this[key] = Array.isArray(el) ? ko.observableArray(el) : ko.observable(el).extend({convertToNumber: $isnumeric});
+                this[key] = Array.isArray(el) ? ko.observableArray(el) : ko.observable(el);
             }
             $(dict2js(methods_dict))
             $(dict2js(computed_dict))
