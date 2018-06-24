@@ -49,11 +49,11 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 
             # forward updates from Knockoutjs to Julia
             watches[skey] = @js this[$skey].subscribe( function(val)
-                if !self.valueFromJulia[$skey]
+                if !this.valueFromJulia[$skey]
                     $v[] = val
                 end
-                self.valueFromJulia[$skey] = false
-            end)
+                this.valueFromJulia[$skey] = false
+            end, self)
         end
     end
 
