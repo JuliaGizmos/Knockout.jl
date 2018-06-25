@@ -13,7 +13,7 @@ s = Observable(["a", "b", "c"])
 t = Node(:select, attributes = Dict("data-bind" => "options : options", "id" => "myselect"));
 n = (knockout(t, ["options" => s]));
 
-w = Window(Blink.@d(:show => false)); sleep(5.0)
+w = Window(); sleep(5.0)
 
 body!(w, n); sleep(1.0)
 
@@ -28,5 +28,8 @@ sleep(1.0)
 @test Blink.@js w document.querySelector("#myselect").children.length == 2
 @test Blink.@js w document.querySelector("#myselect").children[0].value == "c"
 @test Blink.@js w document.querySelector("#myselect").children[1].value == "d"
+
+close(w)
+sleep(1.0)
 
 cleanup && AtomShell.uninstall()
