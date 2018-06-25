@@ -76,18 +76,22 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
         ko.punches.enableAll();
         ko.bindingHandlers.numericValue = {
             init : function(element, valueAccessor, allBindings, data, context) {
-                var interceptor = ko.computed({
-                    read: function() {
-                        return ko.unwrap(valueAccessor());
-                    },
-                    write: function(value) {
-                        if (!isNaN(value)) {
-                            valueAccessor()(parseFloat(value));
-                        }
-                    },
-                    disposeWhenNodeIsRemoved: element
-                });
-                ko.applyBindingsToNode(element, { value: interceptor, valueUpdate: allBindings.get('valueUpdate')}, context);
+                var stringified = ko.observable(ko.unwrap(valueAccessor()));
+                stringified.subscribe(function(value) {
+                    var val = parseFloat(value);
+                    if (!isNaN(val)) {
+                        valueAccessor()(val);
+                    }
+                })
+                valueAccessor().subscribe(function(value) {
+                    var str = JSON.stringify(value);
+                    if ((str == "0") && (stringified() in ["-0", "-0."]))
+                        return;
+                    if (str in ["null", ""])
+                        return;
+                    stringified(str);
+                })
+                ko.applyBindingsToNode(element, { value: stringified, valueUpdate: allBindings.get('valueUpdate')}, context);
             }
         };
         var json_data = JSON.parse($json_data);
