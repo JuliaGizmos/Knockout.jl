@@ -85,10 +85,10 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
                 })
                 valueAccessor().subscribe(function(value) {
                     var str = JSON.stringify(value);
-                    if ((str == "0") && (stringified() in ["-0", "-0."]))
-                        return;
-                    if (str in ["null", ""])
-                        return;
+                    if ((str == "0") && (["-0", "-0."].indexOf(stringified()) >= 0))
+                         return;
+                     if (["null", ""].indexOf(str) >= 0)
+                         return;
                     stringified(str);
                 })
                 ko.applyBindingsToNode(element, { value: stringified, valueUpdate: allBindings.get('valueUpdate')}, context);
