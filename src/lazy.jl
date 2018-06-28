@@ -1,6 +1,6 @@
 struct LazyPair{T}
     first::Observable{T}
-    second::Observable{Any}
+    second::Observable
     f
     g
     function LazyPair(first::Observable{T}, second::Observable; f = identity, g = identity) where {T}
