@@ -36,15 +36,14 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        lazypair = isa(v, Observable) ? LazyPair(v) : v
-        ko_data[skey] = isa(lazypair, LazyPair) ? (lazypair.second)[] : lazypair
-        if isa(lazypair, LazyPair)
-            w = lazypair.second
+        ko_data[skey] = _get(v)
+        (v isa LazyPair) && (v = v.second)
+        if isa(v, Observable)
             # associate the observable with the widget
-            setobservable!(widget, skey, w)
+            setobservable!(widget, skey, v)
 
             # forward updates from Julia to Knockoutjs
-            onjs(w, @js function (val)
+            onjs(v, @js function (val)
                 if val != this.model[$skey]()
                     this.valueFromJulia[$skey] = true
                     this.model[$skey](val)
@@ -54,7 +53,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
             # forward updates from Knockoutjs to Julia
             watches[skey] = @js this[$skey].subscribe( function(val)
                 if !this.valueFromJulia[$skey]
-                    $w[] = val
+                    $v[] = val
                 end
                 this.valueFromJulia[$skey] = false
             end, self)
