@@ -9,6 +9,8 @@ export knockout
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 const knockout_punches_js = joinpath(@__DIR__, "..", "assets", "knockout_punches.js")
 
+include("lazy.jl")
+
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
 
@@ -34,13 +36,15 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        ko_data[skey] = isa(v, Observable) ? v[] : v
-        if isa(v, Observable)
+        lazypair = isa(v, Observable) ? LazyPair(v) : v
+        ko_data[skey] = isa(lazypair, LazyPair) ? (lazypair.second)[] : lazypair
+        if isa(lazypair, LazyPair)
+            w = lazypair.second
             # associate the observable with the widget
-            setobservable!(widget, skey, v)
+            setobservable!(widget, skey, w)
 
             # forward updates from Julia to Knockoutjs
-            onjs(v, @js function (val)
+            onjs(w, @js function (val)
                 if val != this.model[$skey]()
                     this.valueFromJulia[$skey] = true
                     this.model[$skey](val)
@@ -50,7 +54,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
             # forward updates from Knockoutjs to Julia
             watches[skey] = @js this[$skey].subscribe( function(val)
                 if !this.valueFromJulia[$skey]
-                    $v[] = val
+                    $w[] = val
                 end
                 this.valueFromJulia[$skey] = false
             end, self)
