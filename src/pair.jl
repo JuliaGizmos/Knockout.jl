@@ -1,9 +1,9 @@
-struct ObservablePair{T}
-    first::Observable{T}
-    second::Observable
+struct ObservablePair{S, T}
+    first::Observable{S}
+    second::Observable{T}
     f
     g
-    function ObservablePair(first::Observable{T}, second::Observable; f = identity, g = identity) where {T}
+    function ObservablePair(first::Observable{S}, second::Observable{T}; f = identity, g = identity) where {S, T}
         on(first) do val
             fval = f(val)
             (second[] == fval) || Observables.setexcludinghandlers(second, fval, x -> x !== g)
@@ -12,7 +12,7 @@ struct ObservablePair{T}
             gval = g(val)
             (first[] == gval) || Observables.setexcludinghandlers(first, gval, x -> x !== f)
         end
-        new{T}(first, second, f, g)
+        new{S, T}(first, second, f, g)
     end
 end
 
