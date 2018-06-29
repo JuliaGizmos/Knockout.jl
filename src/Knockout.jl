@@ -9,7 +9,7 @@ export knockout
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 const knockout_punches_js = joinpath(@__DIR__, "..", "assets", "knockout_punches.js")
 
-include("lazy.jl")
+include("pair.jl")
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
@@ -36,7 +36,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        (v isa LazyPair) && (v = v.second)
+        (v isa ObservablePair) && (v = v.second)
         ko_data[skey] = isa(v, Observable) ? v[] : v
         if isa(v, Observable)
             # associate the observable with the widget

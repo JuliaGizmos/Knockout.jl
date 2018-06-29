@@ -1,9 +1,9 @@
-struct LazyPair{T}
+struct ObservablePair{T}
     first::Observable{T}
     second::Observable
     f
     g
-    function LazyPair(first::Observable{T}, second::Observable; f = identity, g = identity) where {T}
+    function ObservablePair(first::Observable{T}, second::Observable; f = identity, g = identity) where {T}
         on(first) do val
             fval = f(val)
             (second[] == fval) || Observables.setexcludinghandlers(second, fval, x -> x !== g)
@@ -16,5 +16,5 @@ struct LazyPair{T}
     end
 end
 
-LazyPair(first::Observable; f = identity, g = identity) =
-    LazyPair(first, Observable{Any}(f(first[])); f = f, g = g)
+ObservablePair(first::Observable; f = identity, g = identity) =
+    ObservablePair(first, Observable{Any}(f(first[])); f = f, g = g)
