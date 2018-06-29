@@ -36,8 +36,8 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        ko_data[skey] = _get(v)
         (v isa LazyPair) && (v = v.second)
+        ko_data[skey] = isa(v, Observable) ? v[] : v
         if isa(v, Observable)
             # associate the observable with the widget
             setobservable!(widget, skey, v)

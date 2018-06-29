@@ -18,7 +18,3 @@ end
 
 LazyPair(first::Observable; f = identity, g = identity) =
     LazyPair(first, Observable{Any}(f(first[])); f = f, g = g)
-
-_get(x) = x
-_get(x::Observable) = x[]
-_get(x::LazyPair) = _get(x.second)
