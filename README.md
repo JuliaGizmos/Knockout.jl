@@ -24,7 +24,7 @@ If a property's value is an observable, this function syncs the property and the
 
 ```julia
 ob = Observable("hello")
-vue(template, [:message=>ob, :visible=>true])
+knockout(template, [:message=>ob, :visible=>true])
 ```
 Now if at any time you run `ob[] = "hey there!"` on Julia, you should see the contents of the message update in the UI. Try making an observable for `:visible` property and set it to true or false, you should see the message toggle in and out of view!
 
