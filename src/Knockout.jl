@@ -4,13 +4,12 @@ module Knockout
 
 using WebIO, Observables, JSExpr, JSON
 import Observables: off
+import Widgets: ObservablePair, unwrap
 
 export knockout
 
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 const knockout_punches_js = joinpath(@__DIR__, "..", "assets", "knockout_punches.js")
-
-include("pair.jl")
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
