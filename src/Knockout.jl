@@ -2,6 +2,7 @@ __precompile__()
 
 module Knockout
 
+using Compat
 using WebIO, Observables, JSExpr, JSON
 import Observables: off
 import Widgets: ObservablePair, unwrap
@@ -121,7 +122,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     widget
 end
 
-function dict2js(d::Associative)
+function dict2js(d::AbstractDict)
     isempty(d) ? js"" : js"$(values(d)...)"
 end
 

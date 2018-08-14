@@ -8,16 +8,35 @@ matrix:
       julia: 0.6
       env: TESTCMD="xvfb-run julia"
     - os: linux
+      julia: 0.7
+      env: TESTCMD="xvfb-run julia"
+    - os: linux
+      julia: 1.0
+      env: TESTCMD="xvfb-run julia"
+    - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
+    - os: osx
+      julia: 0.6
+      env: TESTCMD="julia"
+    - os: osx
+      julia: 0.7
+      env: TESTCMD="julia"
+    - os: osx
+      julia: 1.0
+      env: TESTCMD="julia"
+    - os: osx
+      julia: nightly
+      env: TESTCMD="julia"
   allow_failures:
     - julia: nightly
+    - julia: 1.0 # for now
+branches:
+  only:
+    - master
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("Knockout"); Pkg.test("Knockout"; coverage=true)'
-
 after_success:
-  # push coverage results to Coveralls
-  - julia -e 'cd(Pkg.dir("Knockout")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
-  # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("Knockout")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e coverage.jl
