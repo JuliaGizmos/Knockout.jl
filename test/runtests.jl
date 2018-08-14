@@ -1,12 +1,19 @@
 using Knockout, WebIO, Blink
 using Compat.Test
 
+if isdefined(WebIO, :node) # TODO: remove once a new WebIO tag is in
+    using WebIO: node
+else
+    using WebIO: Node
+    const node = Node
+end
+
 cleanup = !AtomShell.isinstalled()
 cleanup && AtomShell.install()
 
 # write your own tests here
 s = Observable(["a", "b", "c"])
-t = Node(:select, attributes = Dict("data-bind" => "options : options", "id" => "myselect"));
+t = node(:select, attributes = Dict("data-bind" => "options : options", "id" => "myselect"));
 n = (knockout(t, ["options" => s]));
 
 w = Window(Blink.@d(:show => false)); sleep(5.0)
