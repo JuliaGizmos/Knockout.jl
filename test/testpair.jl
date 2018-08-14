@@ -1,4 +1,5 @@
 using Observables
+import Compat.MathConstants: e
 
 v = Knockout.ObservablePair(Observable(1.0), f = exp, g = log)
 @test v.second[] ≈ e
