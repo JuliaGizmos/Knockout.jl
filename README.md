@@ -14,15 +14,16 @@ The package exports a single `knockout` function:
 - `data` is an iterable of `propertyName => value` pairs (e.g. a `Dict`) which populates the template.
 
 ```julia
-using Knockout
+using Knockout, WebIO
 
-template = Node(:p, "{{message}}", attributes = Dict("data-bind" => "visible : visible"))
+template = node(:p, "{{message}}", attributes = Dict("data-bind" => "visible : visible"))
 knockout(template, [:message=>"hello", :visible=>true])
 ```
 
 If a property's value is an observable, this function syncs the property and the observable. Here's how you can update the properties bound to the template from Julia.
 
 ```julia
+using Observables
 ob = Observable("hello")
 knockout(template, [:message=>ob, :visible=>true])
 ```
@@ -36,7 +37,7 @@ Here's an example of JS to Julia communication:
 incoming = Observable("")
 on(println, incoming) # print to console on every update
 
-template = Node(:input, attributes = Dict("type"=>"text", "data-bind" => "value : message"))()
+template = node(:input, attributes = Dict("type"=>"text", "data-bind" => "value : message"))()
 knockout(template, [:message=>incoming])
 ```
 
@@ -46,7 +47,7 @@ This will cause the value of the textbox to flow back to Julia, and should get p
 incoming = Observable("")
 on(println, incoming) # print to console on every update
 
-template = Node(:input, attributes = Dict("type"=>"text", "data-bind" => "value : message, valueUpdate : 'input'"))()
+template = node(:input, attributes = Dict("type"=>"text", "data-bind" => "value : message, valueUpdate : 'input'"))()
 knockout(template, [:message=>incoming])
 ```
 
