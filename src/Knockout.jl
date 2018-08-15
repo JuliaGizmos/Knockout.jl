@@ -123,7 +123,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 end
 
 function dict2js(d::AbstractDict)
-    isempty(d) ? js"" : js"$(values(d)...)"
+    isempty(d) ? js"" : js"$(values(d)...,)"
 end
 
 isnumeric(x) = false
