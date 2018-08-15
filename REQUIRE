@@ -1,6 +1,6 @@
 julia 0.6
 Compat 0.41.0 # for AbstractDict
-WebIO
+WebIO 0.2.6
 Observables
 JSExpr
 JSON

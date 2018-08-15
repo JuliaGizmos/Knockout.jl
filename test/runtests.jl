@@ -1,12 +1,7 @@
 using Knockout, WebIO, Blink
 using Compat.Test
 
-if isdefined(WebIO, :node) # TODO: remove once a new WebIO tag is in
-    using WebIO: node
-else
-    using WebIO: Node
-    const node = Node
-end
+using WebIO: node
 
 cleanup = !AtomShell.isinstalled()
 cleanup && AtomShell.install()
