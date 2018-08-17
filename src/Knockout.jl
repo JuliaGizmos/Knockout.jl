@@ -5,7 +5,7 @@ module Knockout
 using Compat
 using WebIO, Observables, JSExpr, JSON
 import Observables: off
-import Widgets: ObservablePair, unwrap
+import Widgets: ObservablePair
 
 export knockout
 
