@@ -27,6 +27,4 @@ sleep(1.0)
 @test Blink.@js w document.querySelector("#myselect").children[0].value == "c"
 @test Blink.@js w document.querySelector("#myselect").children[1].value == "d"
 
-include("testpair.jl")
-
 cleanup && AtomShell.uninstall()
