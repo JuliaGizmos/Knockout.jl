@@ -24,7 +24,6 @@ matrix:
       env: TESTCMD="julia"
   allow_failures:
     - julia: nightly
-    - julia: 1.0 # for now
 branches:
   only:
     - master
