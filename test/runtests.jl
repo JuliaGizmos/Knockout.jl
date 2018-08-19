@@ -1,5 +1,5 @@
 using Knockout, WebIO, Blink
-using Compat.Test
+using Test
 
 using WebIO: node
 

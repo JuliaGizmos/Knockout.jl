@@ -5,9 +5,6 @@ notifications:
 matrix:
   include:
     - os: linux
-      julia: 0.6
-      env: TESTCMD="xvfb-run julia"
-    - os: linux
       julia: 0.7
       env: TESTCMD="xvfb-run julia"
     - os: linux
@@ -16,9 +13,6 @@ matrix:
     - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
-    - os: osx
-      julia: 0.6
-      env: TESTCMD="julia"
     - os: osx
       julia: 0.7
       env: TESTCMD="julia"

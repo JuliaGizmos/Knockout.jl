@@ -2,10 +2,8 @@ __precompile__()
 
 module Knockout
 
-using Compat
 using WebIO, Observables, JSExpr, JSON
-import Observables: off
-import Widgets: ObservablePair
+import Observables: off, ObservablePair
 
 export knockout
 
