@@ -3,7 +3,7 @@ __precompile__()
 module Knockout
 
 using WebIO, Observables, JSExpr, JSON
-import Observables: off, observe
+import Observables: off, observe, AbstractObservable
 
 export knockout
 
