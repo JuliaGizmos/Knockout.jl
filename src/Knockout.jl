@@ -35,7 +35,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        (v isa AbstractObservable) && (v = observe(v))
+        (v isa AbstractObservable) && (v = observe(v)) # remove as soon as there is proper abstractobservable support
         ko_data[skey] = isa(v, AbstractObservable) ? v[] : v
         if isa(v, AbstractObservable)
             # associate the observable with the widget
