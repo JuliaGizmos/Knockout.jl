@@ -3,7 +3,7 @@ __precompile__()
 module Knockout
 
 using WebIO, Observables, JSExpr, JSON
-import Observables: off, observe, AbstractObservable
+import Observables: off, observe, AbstractObservable, ObservablePair
 
 export knockout
 
@@ -35,6 +35,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
+        (v isa ObservablePair) && (v = v.second)
         ko_data[skey] = isa(v, AbstractObservable) ? v[] : v
         if isa(v, AbstractObservable)
             # associate the observable with the widget
