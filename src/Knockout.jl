@@ -2,10 +2,8 @@ __precompile__()
 
 module Knockout
 
-using Compat
 using WebIO, Observables, JSExpr, JSON
-import Observables: off
-import Widgets: ObservablePair
+import Observables: off, observe, AbstractObservable
 
 export knockout
 
@@ -37,9 +35,9 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     watches = Dict()
     for (k, v) in data
         skey = string(k)
-        (v isa ObservablePair) && (v = v.second)
-        ko_data[skey] = isa(v, Observable) ? v[] : v
-        if isa(v, Observable)
+        (v isa AbstractObservable) && (v = observe(v)) # remove as soon as there is proper abstractobservable support
+        ko_data[skey] = isa(v, AbstractObservable) ? v[] : v
+        if isa(v, AbstractObservable)
             # associate the observable with the widget
             setobservable!(widget, skey, v)
 
@@ -129,6 +127,6 @@ end
 isnumeric(x) = false
 isnumeric(x::Number) = true
 isnumeric(x::Bool) = false
-isnumeric(x::Observable) = isnumeric(x[])
+isnumeric(x::AbstractObservable) = isnumeric(x[])
 
 end # module

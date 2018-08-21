@@ -5,9 +5,6 @@ notifications:
 matrix:
   include:
     - os: linux
-      julia: 0.6
-      env: TESTCMD="xvfb-run julia"
-    - os: linux
       julia: 0.7
       env: TESTCMD="xvfb-run julia"
     - os: linux
@@ -16,9 +13,6 @@ matrix:
     - os: linux
       julia: nightly
       env: TESTCMD="xvfb-run julia"
-    - os: osx
-      julia: 0.6
-      env: TESTCMD="julia"
     - os: osx
       julia: 0.7
       env: TESTCMD="julia"
@@ -30,13 +24,12 @@ matrix:
       env: TESTCMD="julia"
   allow_failures:
     - julia: nightly
-    - julia: 1.0 # for now
 branches:
   only:
     - master
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("Knockout"); Pkg.test("Knockout"; coverage=true)'
+  - $TESTCMD -e 'using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="Blink", rev="master")); Pkg.build("Knockout"); Pkg.test("Knockout"; coverage=true)'
 after_success:
   - julia -e coverage.jl
