@@ -30,6 +30,6 @@ branches:
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/ # version tags
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - $TESTCMD -e 'Pkg.clone(pwd()); Pkg.build("Knockout"); Pkg.test("Knockout"; coverage=true)'
+  - $TESTCMD -e 'import Pkg; Pkg.clone(pwd()); Pkg.build("Knockout"); Pkg.test("Knockout"; coverage=true)'
 after_success:
   - julia -e coverage.jl
