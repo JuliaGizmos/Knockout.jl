@@ -5,8 +5,7 @@ import Observables: off, observe, AbstractObservable, ObservablePair
 
 export knockout
 
-const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
-const knockout_punches_js = joinpath(@__DIR__, "..", "assets", "knockout_punches.js")
+const knockout_js = "https://unpkg.com/tko@4.0.0-alpha5h/dist/tko.min.js"
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
@@ -26,7 +25,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js, "knockout_punches" => knockout_punches_js]
+        imports=Any["knockout" => knockout_js]
     )
     widget.dom = template
     ko_data = Dict()
@@ -72,28 +71,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     json_data = JSON.json(ko_data)
 
     on_import = js"""
-    function (ko, koPunches) {
-        ko.punches.enableAll();
-        ko.bindingHandlers.numericValue = {
-            init : function(element, valueAccessor, allBindings, data, context) {
-                var stringified = ko.observable(ko.unwrap(valueAccessor()));
-                stringified.subscribe(function(value) {
-                    var val = parseFloat(value);
-                    if (!isNaN(val)) {
-                        valueAccessor()(val);
-                    }
-                })
-                valueAccessor().subscribe(function(value) {
-                    var str = JSON.stringify(value);
-                    if ((str == "0") && (["-0", "-0."].indexOf(stringified()) >= 0))
-                         return;
-                     if (["null", ""].indexOf(str) >= 0)
-                         return;
-                    stringified(str);
-                })
-                ko.applyBindingsToNode(element, { value: stringified, valueUpdate: allBindings.get('valueUpdate')}, context);
-            }
-        };
+    function (ko) {
         var json_data = JSON.parse($json_data);
         var self = this;
         function AppViewModel() {
