@@ -5,7 +5,7 @@ import Observables: off, observe, AbstractObservable, ObservablePair
 
 export knockout
 
-const knockout_js = "https://unpkg.com/tko@4.0.0-alpha5h/dist/tko.min.js"
+const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
