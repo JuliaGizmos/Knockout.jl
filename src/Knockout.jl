@@ -6,7 +6,6 @@ import Observables: off, observe, AbstractObservable, ObservablePair
 export knockout
 
 const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
-const is_tko = true
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
@@ -106,6 +105,6 @@ isnumeric(x::Number) = true
 isnumeric(x::Bool) = false
 isnumeric(x::AbstractObservable) = isnumeric(x[])
 
-js_lambda(s::String) = "function (){$s}"
+js_lambda(s::String) = "=> $s"
 
 end # module
