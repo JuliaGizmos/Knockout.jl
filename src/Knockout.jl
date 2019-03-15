@@ -1,5 +1,3 @@
-__precompile__()
-
 module Knockout
 
 using WebIO, Observables, JSExpr, JSON
@@ -128,5 +126,7 @@ isnumeric(x) = false
 isnumeric(x::Number) = true
 isnumeric(x::Bool) = false
 isnumeric(x::AbstractObservable) = isnumeric(x[])
+
+js_lambda(s::String) = "function (){$s}"
 
 end # module
