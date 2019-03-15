@@ -5,7 +5,7 @@ import Observables: off, observe, AbstractObservable, ObservablePair
 
 export knockout
 
-const knockout_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
+const tko_js = joinpath(@__DIR__, "..", "assets", "knockout.js")
 
 """
 `knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])`
@@ -25,7 +25,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js]
+        imports=Any["knockout" => tko_js]
     )
     widget.dom = template
     ko_data = Dict()
