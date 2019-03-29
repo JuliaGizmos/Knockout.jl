@@ -34,7 +34,6 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     for (k, v) in data
         skey = string(k)
         (v isa ObservablePair) && (v = v.second)
-        ko_data[skey] = isa(v, AbstractObservable) ? v[] : v
         if isa(v, AbstractObservable)
             # associate the observable with the widget
             setobservable!(widget, skey, v)
@@ -54,6 +53,9 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
                 end
                 this.valueFromJulia[$skey] = false
             end, self)
+            ko_data[skey] = @js $v[]
+        else
+            ko_data[skey] = v
         end
     end
 
@@ -68,8 +70,6 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
         skey = string(k)
         computed_dict[skey] = @js this[$skey] = ko.computed($f, this)
     end
-
-    json_data = JSON.json(ko_data)
 
     on_import = js"""
     function (ko, koPunches) {
@@ -94,7 +94,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
                 ko.applyBindingsToNode(element, { value: stringified, valueUpdate: allBindings.get('valueUpdate')}, context);
             }
         };
-        var json_data = JSON.parse($json_data);
+        var json_data = $ko_data;
         var self = this;
         function AppViewModel() {
             for (var key in json_data) {
