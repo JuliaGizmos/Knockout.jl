@@ -26,7 +26,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
     widget = Scope(id;
-        imports=Any["knockout" => knockout_js, "knockout_punches" => knockout_punches_js]
+        imports=Any["knockout" => knockout_js]
     )
     widget.dom = template
     ko_data = Dict()
@@ -72,8 +72,7 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
     end
 
     on_import = js"""
-    function (ko, koPunches) {
-        ko.punches.enableAll();
+    function (ko) {
         ko.bindingHandlers.numericValue = {
             init : function(element, valueAccessor, allBindings, data, context) {
                 var stringified = ko.observable(ko.unwrap(valueAccessor()));
@@ -127,6 +126,6 @@ isnumeric(x::Number) = true
 isnumeric(x::Bool) = false
 isnumeric(x::AbstractObservable) = isnumeric(x[])
 
-js_lambda(s::String) = "function (){$s}"
+js_lambda(s::String) = "=> $s"
 
 end # module
