@@ -116,7 +116,8 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
         for (var key in json_data) {
             self.valueFromJulia[key] = false;
         }
-        ko.applyBindings(self.model, self.dom);
+        self.dom.setAttribute('data-bind', 'applyBindings: false');
+        ko.applyBindings(self.model, self.dom.childNodes[0]);
     }
     """
     onimport(widget, on_import)
