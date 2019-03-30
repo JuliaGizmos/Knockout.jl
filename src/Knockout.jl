@@ -126,6 +126,6 @@ isnumeric(x::Number) = true
 isnumeric(x::Bool) = false
 isnumeric(x::AbstractObservable) = isnumeric(x[])
 
-js_lambda(s::String) = "=> $s"
+js_lambda(s::String) = "() => $s"
 
 end # module
