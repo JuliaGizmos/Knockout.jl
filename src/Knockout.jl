@@ -72,6 +72,13 @@ function knockout(template, data=Dict(), extra_js = js""; computed = [], methods
 
     on_import = js"""
     function (ko) {
+        ko.bindingHandlers.allowBindings = {
+            init: function(elem, valueAccessor) {
+                // Let bindings proceed as normal *only if* my value is false
+                var shouldAllowBindings = ko.unwrap(valueAccessor());
+                return { controlsDescendantBindings: !shouldAllowBindings };
+            }
+        };
         ko.bindingHandlers.numericValue = {
             init : function(element, valueAccessor, allBindings, data, context) {
                 var stringified = ko.observable(ko.unwrap(valueAccessor()));
