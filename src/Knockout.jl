@@ -25,7 +25,7 @@ You can pass functions that you want available in the Knockout scope as keyword 
 """
 function knockout(template, data=Dict(), extra_js = js""; computed = [], methods = [])
     id = WebIO.newid("knockout-component")
-    widget = Scope(id;
+    widget = Scope(id=id,
         imports=Any["knockout" => knockout_js, "knockout_punches" => knockout_punches_js]
     )
     widget.dom = template
