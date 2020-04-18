@@ -11,15 +11,15 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 
 [compat]
-JSExpr = "0.5"
+JSExpr = "0.5, 1.0"
 JSON = "0.18, 0.19, 0.20, 0.21"
 Observables = "0.2.3, 0.3"
 WebIO = "0.8"
 julia = "0.7, 1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Blink", "Test"]
