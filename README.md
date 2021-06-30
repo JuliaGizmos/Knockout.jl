@@ -1,5 +1,5 @@
 # Knockout
-[![Build Status](https://travis-ci.org/JuliaGizmos/Knockout.jl.svg?branch=master)](https://travis-ci.org/JuliaGizmos/Knockout.jl)  [![codecov](https://codecov.io/gh/JuliaGizmos/Knockout.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGizmos/Knockout.jl)
+[![CI](https://github.com/JuliaGizmos/Knockout.jl/workflows/CI/badge.svg?branch=master)](https://github.com/JuliaGizmos/Knockout.jl/actions?query=workflow%3ACI+branch%3Amaster)  [![codecov](https://codecov.io/gh/JuliaGizmos/Knockout.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGizmos/Knockout.jl)
 
 A Julia wrapper for [Knockout.js](http://knockoutjs.com/). It uses [WebIO](https://github.com/JuliaGizmos/WebIO.jl) to load JavaScript and to do Julia to JS communication. [Go here](https://github.com/JuliaGizmos/WebIO.jl/blob/master/README.md) to get started with WebIO.
 
