@@ -1,7 +1,7 @@
 name = "Knockout"
 uuid = "bcebb21b-c2e3-54f8-a781-646b90f6d2cc"
 license = "MIT"
-version = "0.2.4"
+version = "0.2.5"
 
 [deps]
 JSExpr = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
@@ -13,7 +13,7 @@ WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 [compat]
 JSExpr = "0.5"
 JSON = "0.18, 0.19, 0.20, 0.21"
-Observables = "0.2.3, 0.3"
+Observables = "0.2.3, 0.3, 0.4"
 WebIO = "0.8"
 julia = "0.7, 1"
 
