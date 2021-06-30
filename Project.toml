@@ -18,8 +18,8 @@ WebIO = "0.8"
 julia = "0.7, 1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Blink", "Test"]
