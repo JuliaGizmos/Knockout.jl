@@ -1,7 +1,7 @@
 name = "Knockout"
 uuid = "bcebb21b-c2e3-54f8-a781-646b90f6d2cc"
 license = "MIT"
-version = "0.2.6"
+version = "0.2.5"
 
 [deps]
 JSExpr = "97c1335a-c9c5-57fe-bc5d-ec35cebe8660"
